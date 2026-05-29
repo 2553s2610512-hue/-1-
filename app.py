@@ -1,10 +1,3 @@
-# 간단한 Streamlit 싸움 대화 도움 앱
-
-## 1. app.py
-
-아래 내용만 그대로 복사해서 `app.py` 파일에 넣어.
-
-```python
 import streamlit as st
 
 st.title("싸움 대화 도우미")
@@ -27,44 +20,3 @@ if st.button("답변 보기"):
             st.write("- " + answer)
     else:
         st.warning("상황을 입력해줘!")
-```
-
----
-
-## 2. requirements.txt
-
-아래 한 줄만 넣어.
-
-```txt
-streamlit
-```
-
----
-
-## 3. GitHub 업로드 방법
-
-1. GitHub에서 새 저장소 만들기
-2. `app.py` 와 `requirements.txt` 업로드
-3. 커밋하기
-
----
-
-## 4. Streamlit 배포 방법
-
-1. Streamlit Cloud 접속
-2. GitHub 연결
-3. 저장소 선택
-4. `app.py` 선택 후 Deploy 누르기
-
----
-
-## 5. 실행 명령어
-
-터미널에서:
-
-```bash
-streamlit run app.py
-```
-
-앱 실행 후 브라우저가 자동으로 열림.
-
