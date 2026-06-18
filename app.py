@@ -1,120 +1,102 @@
 import streamlit as st
-from datetime import date
 
-# 페이지 설정
 st.set_page_config(
-    page_title="BlueMeet",
-    page_icon="📅",
-    layout="centered"
+page_title="MeetPoint",
+page_icon="📍",
+layout="wide"
 )
 
-# 스타일
 st.markdown("""
+
 <style>
-.main {
-    background-color: #f5f9ff;
+
+.stApp{
+    background: linear-gradient(180deg,#f7fbff 0%,#eef5ff 100%);
 }
 
-.hero {
-    background: linear-gradient(135deg, #0A4DFF, #4F8DFF);
-    padding: 35px;
-    border-radius: 20px;
-    text-align: center;
-    color: white;
-    margin-bottom: 25px;
-    box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+.hero{
+    text-align:center;
+    padding-top:90px;
+    padding-bottom:90px;
 }
 
-.hero-title {
-    font-size: 40px;
-    font-weight: 800;
+.title{
+    font-size:72px;
+    font-weight:800;
+    color:#0A4DFF;
+    margin-bottom:10px;
 }
 
-.hero-sub {
-    font-size: 18px;
-    opacity: 0.95;
+.subtitle{
+    font-size:24px;
+    color:#4a5568;
+    margin-bottom:40px;
 }
 
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    border-left: 6px solid #0A4DFF;
-    box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
-    margin-top: 20px;
+.feature-box{
+    background:white;
+    border-radius:20px;
+    padding:25px;
+    text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+    border:1px solid #e6eefc;
 }
 
-.label {
-    color: #0A4DFF;
-    font-weight: bold;
+.feature-title{
+    font-size:22px;
+    font-weight:700;
+    color:#0A4DFF;
+}
+
+.feature-desc{
+    color:#666;
+    margin-top:8px;
+}
+
+.footer{
+    text-align:center;
+    color:#7a7a7a;
+    margin-top:60px;
 }
 </style>
+
 """, unsafe_allow_html=True)
 
-# 상단 Hero
 st.markdown("""
+
 <div class="hero">
-    <div class="hero-title">BlueMeet</div>
-    <div class="hero-sub">
-        약속 날짜, 시간, 장소를 빠르게 정리하는 심플한 일정 조율 도구
+    <div class="title">📍 MeetPoint</div>
+    <div class="subtitle">
+        약속을 더 쉽게 ✨
+        <br><br>
+        날짜, 시간, 장소를 함께 정하고
+        모두가 편한 일정을 만들어보세요.
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.write("### 📌 약속 정보 입력")
+col1, col2, col3, col4 = st.columns(4)
 
-# 예외 처리용 기본값
-try:
-    title = st.text_input(
-        "약속 제목",
-        placeholder="예: 팀 미팅"
-    )
+with col1:
+st.markdown(""" <div class="feature-box"> <div class="feature-title">📅</div> <div class="feature-desc">날짜 조율</div> </div>
+""", unsafe_allow_html=True)
 
-    meeting_date = st.date_input(
-        "날짜 선택",
-        value=date.today()
-    )
+with col2:
+st.markdown(""" <div class="feature-box"> <div class="feature-title">⏰</div> <div class="feature-desc">시간 선택</div> </div>
+""", unsafe_allow_html=True)
 
-    meeting_time = st.time_input(
-        "시간 선택"
-    )
+with col3:
+st.markdown(""" <div class="feature-box"> <div class="feature-title">📍</div> <div class="feature-desc">장소 결정</div> </div>
+""", unsafe_allow_html=True)
 
-    location = st.text_input(
-        "장소",
-        placeholder="예: 강남역 스타벅스"
-    )
+with col4:
+st.markdown(""" <div class="feature-box"> <div class="feature-title">🤝</div> <div class="feature-desc">일정 공유</div> </div>
+""", unsafe_allow_html=True)
 
-    memo = st.text_area(
-        "메모",
-        placeholder="참석 인원, 준비물 등을 적어보세요."
-    )
+st.markdown("""
 
-    st.divider()
-
-    if st.button("약속 정리하기", use_container_width=True):
-
-        if not title.strip():
-            st.warning("약속 제목을 입력해주세요.")
-        else:
-            st.markdown(f"""
-            <div class="card">
-                <h3>📅 약속 요약</h3>
-                <p><span class="label">제목</span><br>{title}</p>
-                <p><span class="label">날짜</span><br>{meeting_date}</p>
-                <p><span class="label">시간</span><br>{meeting_time.strftime('%H:%M')}</p>
-                <p><span class="label">장소</span><br>{location if location else "미정"}</p>
-                <p><span class="label">메모</span><br>{memo if memo else "없음"}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-            st.success("약속 정보가 정리되었습니다.")
-
-except Exception as e:
-    st.error("오류가 발생했습니다.")
-    st.exception(e)
-
-# 하단 설명
-st.markdown("---")
-st.caption(
-    "BlueMeet는 약속 날짜, 시간, 장소를 간단하게 정리하기 위한 Streamlit 웹앱입니다."
-)
+<div class="footer">
+    Blue & White Premium Theme 💙
+</div>
+""", unsafe_allow_html=True)
+"""
