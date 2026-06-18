@@ -59,9 +59,7 @@ st.divider()
 st.subheader("📊 투표 현황")
 
 for place in st.session_state.places:
-    st.write(
-        f"📍 {place}: {st.session_state.votes[place]}표"
-    )
+    st.write(f"📍 {place}: {st.session_state.votes[place]}표")
 
 max_vote = max(st.session_state.votes.values())
 
