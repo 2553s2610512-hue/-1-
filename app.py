@@ -1,146 +1,120 @@
 import streamlit as st
-import google.generativeai as genai
+from datetime import date
 
-# -----------------------------
 # 페이지 설정
-# -----------------------------
 st.set_page_config(
-    page_title="연애상담 챗봇",
-    page_icon="💖",
+    page_title="BlueMeet",
+    page_icon="📅",
     layout="centered"
 )
 
-st.title("💖 연애상담 챗봇")
-st.caption("Gemini 2.5 Flash Lite 기반")
+# 스타일
+st.markdown("""
+<style>
+.main {
+    background-color: #f5f9ff;
+}
 
-# -----------------------------
-# API 키 설정
-# -----------------------------
+.hero {
+    background: linear-gradient(135deg, #0A4DFF, #4F8DFF);
+    padding: 35px;
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.15);
+}
+
+.hero-title {
+    font-size: 40px;
+    font-weight: 800;
+}
+
+.hero-sub {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 6px solid #0A4DFF;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+.label {
+    color: #0A4DFF;
+    font-weight: bold;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 상단 Hero
+st.markdown("""
+<div class="hero">
+    <div class="hero-title">BlueMeet</div>
+    <div class="hero-sub">
+        약속 날짜, 시간, 장소를 빠르게 정리하는 심플한 일정 조율 도구
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.write("### 📌 약속 정보 입력")
+
+# 예외 처리용 기본값
 try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-except Exception:
-    st.error(
-        "GEMINI_API_KEY를 불러올 수 없습니다.\n"
-        "Streamlit Secrets 설정을 확인하세요."
+    title = st.text_input(
+        "약속 제목",
+        placeholder="예: 팀 미팅"
     )
-    st.stop()
 
-# -----------------------------
-# 모델 생성
-# -----------------------------
-try:
-    model = genai.GenerativeModel("gemini-2.5-flash-lite")
+    meeting_date = st.date_input(
+        "날짜 선택",
+        value=date.today()
+    )
+
+    meeting_time = st.time_input(
+        "시간 선택"
+    )
+
+    location = st.text_input(
+        "장소",
+        placeholder="예: 강남역 스타벅스"
+    )
+
+    memo = st.text_area(
+        "메모",
+        placeholder="참석 인원, 준비물 등을 적어보세요."
+    )
+
+    st.divider()
+
+    if st.button("약속 정리하기", use_container_width=True):
+
+        if not title.strip():
+            st.warning("약속 제목을 입력해주세요.")
+        else:
+            st.markdown(f"""
+            <div class="card">
+                <h3>📅 약속 요약</h3>
+                <p><span class="label">제목</span><br>{title}</p>
+                <p><span class="label">날짜</span><br>{meeting_date}</p>
+                <p><span class="label">시간</span><br>{meeting_time.strftime('%H:%M')}</p>
+                <p><span class="label">장소</span><br>{location if location else "미정"}</p>
+                <p><span class="label">메모</span><br>{memo if memo else "없음"}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+            st.success("약속 정보가 정리되었습니다.")
+
 except Exception as e:
-    st.error(f"모델 생성 중 오류 발생: {e}")
-    st.stop()
+    st.error("오류가 발생했습니다.")
+    st.exception(e)
 
-# -----------------------------
-# 채팅 기록 초기화
-# -----------------------------
-if "messages" not in st.session_state:
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content": (
-                "안녕하세요 😊\n\n"
-                "연애 고민, 썸, 짝사랑, 이별, 재회 등 "
-                "무엇이든 편하게 이야기해 주세요!"
-            )
-        }
-    ]
-
-# -----------------------------
-# 기존 채팅 표시
-# -----------------------------
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# -----------------------------
-# 사용자 입력
-# -----------------------------
-user_input = st.chat_input("고민을 입력하세요...")
-
-if user_input:
-
-    # 사용자 메시지 저장
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": user_input
-        }
-    )
-
-    with st.chat_message("user"):
-        st.markdown(user_input)
-
-    try:
-        # Gemini 형식으로 대화 이력 변환
-        history = []
-
-        for msg in st.session_state.messages[:-1]:
-            if msg["role"] == "user":
-                history.append(
-                    {
-                        "role": "user",
-                        "parts": [msg["content"]]
-                    }
-                )
-            elif msg["role"] == "assistant":
-                history.append(
-                    {
-                        "role": "model",
-                        "parts": [msg["content"]]
-                    }
-                )
-
-        chat = model.start_chat(history=history)
-
-        prompt = f"""
-너는 따뜻하고 현실적인 연애상담 전문가다.
-
-규칙:
-- 공감하기
-- 상황 분석하기
-- 현실적인 조언 제시하기
-- 공격적이거나 무례하지 않기
-- 답변은 너무 길지 않게 작성
-
-사용자:
-{user_input}
-"""
-
-        response = chat.send_message(prompt)
-        answer = response.text
-
-    except Exception as e:
-        answer = f"⚠️ 오류가 발생했습니다.\n\n{e}"
-
-    # 답변 저장
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer
-        }
-    )
-
-    with st.chat_message("assistant"):
-        st.markdown(answer)
-
-# -----------------------------
-# 대화 초기화
-# -----------------------------
-st.divider()
-
-if st.button("🗑️ 대화 초기화"):
-    st.session_state.messages = [
-        {
-            "role": "assistant",
-            "content": (
-                "안녕하세요 😊\n\n"
-                "연애 고민을 편하게 이야기해 주세요!"
-            )
-        }
-    ]
-    st.rerun()
+# 하단 설명
+st.markdown("---")
+st.caption(
+    "BlueMeet는 약속 날짜, 시간, 장소를 간단하게 정리하기 위한 Streamlit 웹앱입니다."
+)
